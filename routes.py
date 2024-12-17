@@ -80,4 +80,13 @@ def handle_connection_error(e):
 def handle_internal_server_error(e):
     return jsonify({"error": "An internal server error occurred. Please try again later."}), 500
 
+@routes.route("/status", methods=["GET"])
+def status():
+    try:
+        if web3.is_connected():
+            return jsonify({"status": "Connected to Ethereum network"})
+        else:
+            return jsonify({"status": "Not connected to Ethereum network"}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
