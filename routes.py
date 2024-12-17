@@ -90,3 +90,16 @@ def status():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@routes.route("/block/latest", methods=["GET"])
+def latest_block():
+    try:
+        latest_block_number = web3.eth.block_number
+        block = web3.eth.get_block(latest_block_number)
+        return jsonify({
+            "block_number": block.number,
+            "timestamp": block.timestamp,
+            "transactions": len(block.transactions),
+            "miner": block.miner
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
