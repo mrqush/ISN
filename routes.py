@@ -9,11 +9,11 @@ routes = Blueprint('routes', __name__)
 INFURA_URL = "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID"
 web3 = Web3(Web3.HTTPProvider(INFURA_URL))
 
-# Проверка соединения
-if web3.is_connected():
-    print("Successfully connected to Ethereum")
-else:
-    print("Failed to connect to Ethereum")
+# Проверка соединения при старте приложения
+if not web3.is_connected():
+    raise ConnectionError("Failed to connect to Ethereum. Please check your Infura Project ID.")
+
+print("Successfully connected to Ethereum")
 
 # Маршрут для получения баланса
 @routes.route("/balance", methods=["GET"])
@@ -70,3 +70,8 @@ def send_ether():
         return jsonify({"tx_hash": web3.to_hex(tx_hash)})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# Обработка ошибки при отсутствии соединения
+@routes.errorhandler(ConnectionError)
+def handle_connection_error(e):
+    return jsonify({"error": str(e)}), 500
