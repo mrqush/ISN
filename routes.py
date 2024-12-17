@@ -75,3 +75,9 @@ def send_ether():
 @routes.errorhandler(ConnectionError)
 def handle_connection_error(e):
     return jsonify({"error": str(e)}), 500
+
+@routes.app_errorhandler(500)
+def handle_internal_server_error(e):
+    return jsonify({"error": "An internal server error occurred. Please try again later."}), 500
+
+
