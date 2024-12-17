@@ -103,3 +103,26 @@ def latest_block():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@routes.route("/block/transactions", methods=["GET"])
+def block_transactions():
+    block_number = request.args.get("block_number")
+    if not block_number:
+        return jsonify({"error": "Block number is required"}), 400
+
+    try:
+        block_number = int(block_number)
+        block = web3.eth.get_block(block_number, full_transactions=True)
+        transactions = []
+        for tx in block.transactions:
+            transactions.append({
+                "hash": tx.hash.hex(),
+                "from": tx['from'],
+                "to": tx['to'],
+                "value": wei_to_ether(tx['value']),
+                "gas": tx['gas'],
+                "gasPrice": wei_to_ether(tx['gasPrice'])
+            })
+        return jsonify({"block_number": block_number, "transactions": transactions})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
